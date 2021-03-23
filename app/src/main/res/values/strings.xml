@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Ryuk</string>
     <string name="content_image_preview">content image preview</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="saturation">SATURATION</string>
+    <string name="contrast">CONTRAST</string>
+    <string name="brightness">BRIGHTNESS</string>
+
 </resources>

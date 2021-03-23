@@ -14,6 +14,16 @@ import java.lang.reflect.Field;
 
 public class NonSwipeableViewPager extends ViewPager {
 
+    public NonSwipeableViewPager(@NonNull Context context) {
+        super(context);
+        setMyScroller();
+    }
+
+    public NonSwipeableViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        setMyScroller();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         return false;     //super.onTouchEvent(ev);
@@ -22,11 +32,6 @@ public class NonSwipeableViewPager extends ViewPager {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return false;   //return super.onInterceptTouchEvent(ev);
-    }
-
-    public NonSwipeableViewPager(@NonNull Context context) {
-        super(context);
-        setMyScroller();
     }
 
     private void setMyScroller() {
@@ -40,11 +45,6 @@ public class NonSwipeableViewPager extends ViewPager {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-    }
-
-    public NonSwipeableViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        setMyScroller();
     }
 
     private class MyScroller extends  Scroller{
