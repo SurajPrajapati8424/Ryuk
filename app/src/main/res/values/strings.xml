@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Ryuk</string>
+    <string name="content_image_preview">content image preview</string>
 </resources>
