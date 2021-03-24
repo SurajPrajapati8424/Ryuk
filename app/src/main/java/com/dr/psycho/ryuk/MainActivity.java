@@ -234,8 +234,9 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
                         permissionToken.continuePermissionRequest();
                     }
-                });
+                })
 
+                .check();
     }
 
     private void openImage(String path) {
@@ -266,8 +267,11 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
                         permissionToken.continuePermissionRequest();
                     }
-                });
+                })
+                .withErrorListener(
+                        error -> Toast.makeText(getApplicationContext(),"Error Occured!", Toast.LENGTH_SHORT).show())
 
+                .check();
     }
 
     @Override

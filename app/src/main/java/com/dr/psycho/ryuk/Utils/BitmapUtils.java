@@ -33,7 +33,11 @@ public class BitmapUtils {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             inputStream = assetManager.open(fileName);
+
+            // Calculate inSampleSize
             options.inSampleSize  = calculateInSampleSize(options, width, height);
+
+            // Decode bitmap with inSampleSize set
             options.inJustDecodeBounds = false;
             return BitmapFactory.decodeStream(inputStream, null, options);
 
@@ -55,7 +59,11 @@ public class BitmapUtils {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(picturePath, options);
+
+        // Calculate inSampleSize
         options.inSampleSize  = calculateInSampleSize(options, width, height);
+
+        // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(picturePath, options);
     }
@@ -147,6 +155,7 @@ public class BitmapUtils {
         contentValues.put(MediaStore.Images.Media.DISPLAY_NAME,title);
         contentValues.put(MediaStore.Images.Media.DESCRIPTION,description);
         contentValues.put(MediaStore.Images.Media.MIME_TYPE,"image/jpeg");
+        // Add the date meta data to ensure the image is added at the front of the gallery
         contentValues.put(MediaStore.Images.Media.DATE_ADDED,System.currentTimeMillis());
         contentValues.put(MediaStore.Images.Media.DATE_TAKEN,System.currentTimeMillis());
 

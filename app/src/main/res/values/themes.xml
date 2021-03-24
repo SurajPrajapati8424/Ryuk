@@ -14,7 +14,20 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="Theme.Ryuk.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Ryuk.NoActionBar.FullScreen">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:actionMenuTextColor">@color/color_option_menue</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <color name="color_option_menue">#ff3990</color>
 </resources>
