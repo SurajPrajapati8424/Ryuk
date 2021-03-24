@@ -47,25 +47,33 @@ public class BitmapUtils {
         return null;
     }
 
-    public static  Bitmap getBitMapFromGallery(Context context, Uri uri, int width, int height){
+    public static  Bitmap getBitMapFromGallery(Context context, Uri uri, int width, int height) throws FileNotFoundException {
 
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = context.getContentResolver().query(uri, filePathColumn, null, null,null);
-        cursor.moveToFirst();
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        String picturePath = cursor.getString(columnIndex);
-        cursor.close();
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
+        InputStream inputStream = null;
+        Bitmap bitmap = null;
+
+
+//        Cursor cursor = context.getContentResolver().query(uri, filePathColumn, null, null,null);
+//        cursor.moveToFirst();
+        inputStream =  context.getContentResolver().openInputStream(uri);
+        bitmap = BitmapFactory.decodeStream(inputStream);
+
+//        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//        String picturePath = cursor.getString(columnIndex);
+//        cursor.close();
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(picturePath, options);
+//        BitmapFactory.decodeFile(picturePath, options);
 
         // Calculate inSampleSize
         options.inSampleSize  = calculateInSampleSize(options, width, height);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(picturePath, options);
+        return bitmap;
     }
 
     public static Bitmap applyOverlay(Context context, Bitmap sourceImage, int overlayDrawableResourceId){
@@ -175,10 +183,10 @@ public class BitmapUtils {
                 storeThumbnail(cr,miniThumb,id,50f,50f,MediaStore.Images.Thumbnails.MICRO_KIND);
             }
             else
-                {
-                    cr.delete(uri, null, null);
-                    uri = null;
-                }
+            {
+                cr.delete(uri, null, null);
+                uri = null;
+            }
         } catch (FileNotFoundException e) {
             if (uri != null){
                 cr.delete(uri,null,null);

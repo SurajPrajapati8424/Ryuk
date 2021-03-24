@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter;
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter;
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -255,9 +257,10 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                         if (multiplePermissionsReport.areAllPermissionsGranted())
                         {
-                            Intent intent = new Intent(Intent.ACTION_PICK);
+                            Intent intent = new Intent();
                             intent.setType("image/*");
-                            startActivityForResult(intent, PERMISSION_PACK_IMAGE);
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PERMISSION_PACK_IMAGE);
                         }
                         else
                             Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
@@ -276,8 +279,14 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
         if (resultCode == RESULT_OK && requestCode == PERMISSION_PACK_IMAGE) {
-            Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 800, 800);
+            Bitmap bitmap = null;
+            try {
+                bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 800, 800);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
             // Clear Bitmap memory
             originalBitmap.recycle();
