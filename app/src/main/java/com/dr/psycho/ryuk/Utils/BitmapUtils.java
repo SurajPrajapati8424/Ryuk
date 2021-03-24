@@ -47,33 +47,25 @@ public class BitmapUtils {
         return null;
     }
 
-    public static  Bitmap getBitMapFromGallery(Context context, Uri uri, int width, int height) throws FileNotFoundException {
+    public static  Bitmap getBitMapFromGallery(Context context, Uri uri, int width, int height){
 
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
+        Cursor cursor = context.getContentResolver().query(uri, filePathColumn, null, null,null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String picturePath = cursor.getString(columnIndex);
+        cursor.close();
 
-        InputStream inputStream = null;
-        Bitmap bitmap = null;
-
-
-//        Cursor cursor = context.getContentResolver().query(uri, filePathColumn, null, null,null);
-//        cursor.moveToFirst();
-        inputStream =  context.getContentResolver().openInputStream(uri);
-        bitmap = BitmapFactory.decodeStream(inputStream);
-
-//        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//        String picturePath = cursor.getString(columnIndex);
-//        cursor.close();
-
-        final BitmapFactory.Options options = new BitmapFactory.Options();
+        BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-//        BitmapFactory.decodeFile(picturePath, options);
+        BitmapFactory.decodeFile(picturePath, options);
 
         // Calculate inSampleSize
         options.inSampleSize  = calculateInSampleSize(options, width, height);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return bitmap;
+        return BitmapFactory.decodeFile(picturePath, options);
     }
 
     public static Bitmap applyOverlay(Context context, Bitmap sourceImage, int overlayDrawableResourceId){
