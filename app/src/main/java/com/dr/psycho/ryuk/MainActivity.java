@@ -39,6 +39,7 @@ import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter;
 import java.io.IOException;
 import java.util.List;
 
+import ja.burhanrashid52.photoeditor.OnSaveBitmap;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
 
@@ -94,7 +95,18 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         btn_filters_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                FiltersListFragment filtersListFragment = FiltersListFragment.getInstance();
+                filtersListFragment.setListener(MainActivity.this);
+                filtersListFragment.show(getSupportFragmentManager(),filtersListFragment.getTag());
+            }
+        });
 
+        btn_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditImageFragment editImageFragment = EditImageFragment.getInstance();
+                editImageFragment.setListener(MainActivity.this);
+                editImageFragment.show(getSupportFragmentManager(),editImageFragment.getTag() );
             }
         });
 
@@ -212,34 +224,46 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                 .withListener(new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
-                        if (multiplePermissionsReport.areAllPermissionsGranted()){
-                            try {
-                                final  String path = BitmapUtils.insertImage(getContentResolver(),
-                                        finalBitmap,
-                                        System.currentTimeMillis()+"_profile.jpg",
-                                        null);
+                        if (multiplePermissionsReport.areAllPermissionsGranted())
+                        {
+                            photoEditor.saveAsBitmap(new OnSaveBitmap() {
+                                @Override
+                                public void onBitmapReady(Bitmap saveBitmap) {
+                                    try {
+                                        photoEditorView.getSource().setImageBitmap(saveBitmap);
+                                        final  String path = BitmapUtils.insertImage(getContentResolver(),
+                                                saveBitmap,
+                                                System.currentTimeMillis()+"_profile.jpg",
+                                                null);
 
-                                if (!TextUtils.isEmpty(path)){
-                                    Snackbar snackbar = Snackbar.make(coordinatorLayout,"Image saved to gallery!",
-                                            Snackbar.LENGTH_LONG)
-                                            .setAction("OPEN", new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    openImage(path);
-                                                }
-                                            });
-                                    snackbar.show();
-                                }
-                                else {
-                                    Snackbar snackbar = Snackbar.make(coordinatorLayout,
-                                            "Unable to save Image!",
-                                            Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                        if (!TextUtils.isEmpty(path)){
+                                            Snackbar snackbar = Snackbar.make(coordinatorLayout,"Image saved to gallery!",
+                                                    Snackbar.LENGTH_LONG)
+                                                    .setAction("OPEN", new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            openImage(path);
+                                                        }
+                                                    });
+                                            snackbar.show();
+                                        }
+                                        else {
+                                            Snackbar snackbar = Snackbar.make(coordinatorLayout,
+                                                    "Unable to save Image!",
+                                                    Snackbar.LENGTH_LONG);
+                                            snackbar.show();
+                                        }
+
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
 
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                                @Override
+                                public void onFailure(Exception e) {
+
+                                }
+                            });
                         }
                         else {
                             Toast.makeText(MainActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
@@ -293,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK && requestCode == PERMISSION_PACK_IMAGE) {
+
             Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 800, 800);
 
             // Clear Bitmap memory

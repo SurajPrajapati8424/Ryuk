@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <com.google.android.material.card.MaterialCardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/btn_filters_list"
                 android:padding="16dp"
                 app:cardBackgroundColor="@color/purple_500"
@@ -63,7 +63,7 @@
                         android:layout_height="wrap_content"></TextView>
                 </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+            </androidx.cardview.widget.CardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btn_edit"

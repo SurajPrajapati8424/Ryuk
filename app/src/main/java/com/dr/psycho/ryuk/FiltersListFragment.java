@@ -17,6 +17,7 @@ import com.dr.psycho.ryuk.Adapter.ThumbnailAdapter;
 import com.dr.psycho.ryuk.Interface.FlitersListFragmentListener;
 import com.dr.psycho.ryuk.Utils.BitmapUtils;
 import com.dr.psycho.ryuk.Utils.SpacesItemDecoration;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.zomato.photofilters.FilterPack;
 import com.zomato.photofilters.imageprocessors.Filter;
 import com.zomato.photofilters.utils.ThumbnailItem;
@@ -26,13 +27,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FiltersListFragment extends Fragment implements  FlitersListFragmentListener{
+public class FiltersListFragment extends BottomSheetDialogFragment implements  FlitersListFragmentListener{
 
     RecyclerView recyclerView;
     ThumbnailAdapter adapter;
     List<ThumbnailItem> thumbnailItems;
 
     FlitersListFragmentListener listener;
+
+    static FiltersListFragment instance;
+
+    public static FiltersListFragment getInstance() {
+        if (instance == null)
+            instance = new FiltersListFragment();
+        return instance;
+    }
 
     public void setListener(FlitersListFragmentListener listener) {
         this.listener = listener;
