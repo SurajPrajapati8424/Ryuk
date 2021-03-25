@@ -45,4 +45,8 @@ dependencies {
 
 //androidHive by ravi8x behind Zomato:master
     implementation 'info.androidhive:imagefilters:1.0.7'
+// @burhanrashid52
+    implementation 'ja.burhanrashid52:photoeditor:1.1.1'
+
+    implementation 'androidx.cardview:cardview:1.0.0'
 }
