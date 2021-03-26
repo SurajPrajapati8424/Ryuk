@@ -49,7 +49,8 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
 
 
     public static String pictureName = "gateway_by-suraj.jpg";
-    public  static  int PERMISSION_PACK_IMAGE = 1000;
+    public  static final int PERMISSION_PACK_IMAGE = 1000;
+    public static  final int PERMISSION_INSERT_IMAGE = 1001;
 
     PhotoEditorView photoEditorView;
     PhotoEditor photoEditor;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     FiltersListFragment filtersListFragment;
     EditImageFragment editImageFragment;
 
-    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji,btn_add_text;
+    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji,btn_add_text,btn_add_img;
 
     int brightnessFinal = 0;
     float contrastFinal = 1.0f;
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         btn_brush = (CardView) findViewById(R.id.btn_brush);
         btn_emoji = (CardView) findViewById(R.id.btn_emoji);
         btn_add_text = (CardView) findViewById(R.id.btn_add_text);
+        btn_add_img = (CardView) findViewById(R.id.btn_add_img);
 
         btn_filters_list.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,9 +148,38 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
             }
         });
 
+        btn_add_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addImageToPicture();
+            }
+        });
+
         loadImage();
 
 
+    }
+
+    private void addImageToPicture() {
+        Dexter.withContext(this)
+                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+                        if (multiplePermissionsReport.areAllPermissionsGranted()){
+                            Intent intent = new Intent(Intent.ACTION_PICK);
+                            intent.setType("image/*");
+                            startActivityForResult(intent,PERMISSION_INSERT_IMAGE);
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+                        Toast.makeText(MainActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .check();
     }
 
     private void loadImage() {
@@ -352,25 +383,33 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK && requestCode == PERMISSION_PACK_IMAGE) {
-
-            Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 800, 800);
-
-            // Clear Bitmap memory
-            originalBitmap.recycle();
-            finalBitmap.recycle();
-            filteredBitmap.recycle();
-
-            originalBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-            finalBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
-            filteredBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
-            photoEditorView.getSource().setImageBitmap(originalBitmap);
-            bitmap.recycle();
-
-            //Render Selected img thumbnail
-            filtersListFragment.displayThumbnail(originalBitmap);
-        }
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == PERMISSION_PACK_IMAGE) {
+
+                Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 800, 800);
+
+                // Clear Bitmap memory
+                originalBitmap.recycle();
+                finalBitmap.recycle();
+                filteredBitmap.recycle();
+
+                originalBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                finalBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                filteredBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                photoEditorView.getSource().setImageBitmap(originalBitmap);
+                bitmap.recycle();
+
+                //Render Selected img thumbnail
+                filtersListFragment.displayThumbnail(originalBitmap);
+            } else {
+                if (requestCode == PERMISSION_INSERT_IMAGE) {
+
+                    Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 250 , 250);
+                    photoEditor.addImage(bitmap);
+                }
+            }
+        }
     }
 
     @Override
