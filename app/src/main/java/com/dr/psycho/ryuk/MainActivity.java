@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.dr.psycho.ryuk.Adapter.ViewPagerAdapter;
+import com.dr.psycho.ryuk.Interface.BrushFragmnetListener;
 import com.dr.psycho.ryuk.Interface.EditImageFragmentListener;
 import com.dr.psycho.ryuk.Interface.FlitersListFragmentListener;
 import com.dr.psycho.ryuk.Utils.BitmapUtils;
@@ -43,7 +44,7 @@ import ja.burhanrashid52.photoeditor.OnSaveBitmap;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
 
-public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener {
+public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener, BrushFragmnetListener {
 
 
     public static String pictureName = "gateway_by-suraj.jpg";
@@ -108,6 +109,18 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                 EditImageFragment editImageFragment = EditImageFragment.getInstance();
                 editImageFragment.setListener(MainActivity.this);
                 editImageFragment.show(getSupportFragmentManager(),editImageFragment.getTag() );
+            }
+        });
+
+        btn_brush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Enable brush mode
+                photoEditor.setBrushDrawingMode(true);
+
+                BrushFragment brushFragment = BrushFragment.getInstance();
+                brushFragment.setListener(MainActivity.this);
+                brushFragment.show(getSupportFragmentManager(),brushFragment.getTag());
             }
         });
 
@@ -283,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     private void openImage(String path) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse(path), "images/*");
+        intent.setDataAndType(Uri.parse(path), "image/*");
         startActivity(intent);
     }
 
@@ -336,5 +349,28 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
             filtersListFragment.displayThumbnail(originalBitmap);
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBrushSizeChangedListener(float size) {
+        photoEditor.setBrushSize(size);
+    }
+
+    @Override
+    public void onBrushOpacityChangedListener(int opacity) {
+        photoEditor.setOpacity(opacity);
+    }
+
+    @Override
+    public void onBrushColorChangedListener(int color) {
+        photoEditor.setBrushColor(color);
+    }
+
+    @Override
+    public void onBrushStateChangedListener(boolean isEraser) {
+        if (isEraser)
+            photoEditor.brushEraser();
+        else
+            photoEditor.setBrushDrawingMode(true);
     }
 }
