@@ -1,13 +1,5 @@
 package com.dr.psycho.ryuk;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.viewpager.widget.ViewPager;
-
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,17 +10,24 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.viewpager.widget.ViewPager;
+
 import com.dr.psycho.ryuk.Adapter.ViewPagerAdapter;
+import com.dr.psycho.ryuk.Interface.AddTextFragmentListener;
 import com.dr.psycho.ryuk.Interface.BrushFragmnetListener;
 import com.dr.psycho.ryuk.Interface.EditImageFragmentListener;
 import com.dr.psycho.ryuk.Interface.EmojiFragmentListener;
 import com.dr.psycho.ryuk.Interface.FlitersListFragmentListener;
 import com.dr.psycho.ryuk.Utils.BitmapUtils;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -46,7 +45,7 @@ import ja.burhanrashid52.photoeditor.OnSaveBitmap;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
 
-public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener, BrushFragmnetListener, EmojiFragmentListener {
+public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener, BrushFragmnetListener, EmojiFragmentListener, AddTextFragmentListener {
 
 
     public static String pictureName = "gateway_by-suraj.jpg";
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     FiltersListFragment filtersListFragment;
     EditImageFragment editImageFragment;
 
-    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji;
+    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji,btn_add_text;
 
     int brightnessFinal = 0;
     float contrastFinal = 1.0f;
@@ -97,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         btn_edit = (CardView) findViewById(R.id.btn_edit);
         btn_brush = (CardView) findViewById(R.id.btn_brush);
         btn_emoji = (CardView) findViewById(R.id.btn_emoji);
+        btn_add_text = (CardView) findViewById(R.id.btn_add_text);
 
         btn_filters_list.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +134,15 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                 EmojiFragment emojiFragment = EmojiFragment.getInstance();
                 emojiFragment.setListener(MainActivity.this);
                 emojiFragment.show(getSupportFragmentManager(),emojiFragment.getTag());
+            }
+        });
+
+        btn_add_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddTextFragment addTextFragment = AddTextFragment.getInstance();
+                addTextFragment.setListener(MainActivity.this);
+                addTextFragment.show(getSupportFragmentManager(),addTextFragment.getTag());
             }
         });
 
@@ -390,5 +399,10 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     @Override
     public void onEmojiSelected(String emoji) {
         photoEditor.addEmoji(emoji);
+    }
+
+    @Override
+    public void onAddTextButtonClick(String text, int color) {
+        photoEditor.addText(text,color);
     }
 }

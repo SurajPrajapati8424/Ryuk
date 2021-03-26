@@ -1,12 +1,6 @@
 package com.dr.psycho.ryuk;
 
-import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +8,12 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.ToggleButton;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.dr.psycho.ryuk.Adapter.ColorAdapter;
 import com.dr.psycho.ryuk.Interface.BrushFragmnetListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BrushFragment extends BottomSheetDialogFragment implements ColorAdapter.ColorAdapterListener {
 
@@ -70,7 +64,7 @@ public class BrushFragment extends BottomSheetDialogFragment implements ColorAda
         recycler_color.setHasFixedSize(true);
         recycler_color.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
 
-        colorAdapter = new ColorAdapter(getContext(),genColorList(), this);
+        colorAdapter = new ColorAdapter(getContext(), this);
         recycler_color.setAdapter(colorAdapter);
 
         //Event
@@ -115,34 +109,7 @@ public class BrushFragment extends BottomSheetDialogFragment implements ColorAda
         return itemView;
     }
 
-    private List<Integer> genColorList() {
-        List<Integer> colorList = new ArrayList<>();
 
-        colorList.add(Color.parseColor("#1a1a30"));
-        colorList.add(Color.parseColor("#01011a"));
-        colorList.add(Color.parseColor("#4080ff"));
-        colorList.add(Color.parseColor("#f2e9cd"));
-        colorList.add(Color.parseColor("#cdd6f2"));
-        colorList.add(Color.parseColor("#9ba95b"));
-        colorList.add(Color.parseColor("#b8c8e9"));
-
-        colorList.add(Color.parseColor("#b8e1e9"));
-        colorList.add(Color.parseColor("#c1b8e9"));
-        colorList.add(Color.parseColor("#b8c8e9"));
-        colorList.add(Color.parseColor("#9ba95b"));
-        colorList.add(Color.parseColor("#f2b727"));
-        colorList.add(Color.parseColor("#136978"));
-        colorList.add(Color.parseColor("#01011a"));
-
-        colorList.add(Color.parseColor("#00529c"));
-        colorList.add(Color.parseColor("#123123"));
-        colorList.add(Color.parseColor("#008080"));
-        colorList.add(Color.parseColor("#eeae02"));
-        colorList.add(Color.parseColor("#ffdab9"));
-        colorList.add(Color.parseColor("#f00000"));
-        colorList.add(Color.parseColor("#ff8040"));
-        return  colorList;
-    }
 
     @Override
     public void onColorSelected(int color) {

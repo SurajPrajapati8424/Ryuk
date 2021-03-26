@@ -1,6 +1,7 @@
 package com.dr.psycho.ryuk.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dr.psycho.ryuk.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorViewHolder> {
@@ -19,9 +21,9 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorViewHol
     List<Integer> colorList;
     ColorAdapterListener listener;
 
-    public ColorAdapter(Context context, List<Integer> colorList, ColorAdapterListener listener) {
+    public ColorAdapter(Context context, ColorAdapterListener listener) {
         this.context = context;
-        this.colorList = colorList;
+        this.colorList = genColorList();
         this.listener = listener;
     }
 
@@ -57,6 +59,35 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorViewHol
                 }
             });
         }
+    }
+
+    private List<Integer> genColorList() {
+        List<Integer> colorList = new ArrayList<>();
+
+        colorList.add(Color.parseColor("#1a1a30"));
+        colorList.add(Color.parseColor("#01011a"));
+        colorList.add(Color.parseColor("#4080ff"));
+        colorList.add(Color.parseColor("#f2e9cd"));
+        colorList.add(Color.parseColor("#cdd6f2"));
+        colorList.add(Color.parseColor("#9ba95b"));
+        colorList.add(Color.parseColor("#b8c8e9"));
+
+        colorList.add(Color.parseColor("#b8e1e9"));
+        colorList.add(Color.parseColor("#c1b8e9"));
+        colorList.add(Color.parseColor("#b8c8e9"));
+        colorList.add(Color.parseColor("#9ba95b"));
+        colorList.add(Color.parseColor("#f2b727"));
+        colorList.add(Color.parseColor("#136978"));
+        colorList.add(Color.parseColor("#01011a"));
+
+        colorList.add(Color.parseColor("#00529c"));
+        colorList.add(Color.parseColor("#123123"));
+        colorList.add(Color.parseColor("#008080"));
+        colorList.add(Color.parseColor("#eeae02"));
+        colorList.add(Color.parseColor("#ffdab9"));
+        colorList.add(Color.parseColor("#f00000"));
+        colorList.add(Color.parseColor("#ff8040"));
+        return  colorList;
     }
 
     public  interface ColorAdapterListener{
