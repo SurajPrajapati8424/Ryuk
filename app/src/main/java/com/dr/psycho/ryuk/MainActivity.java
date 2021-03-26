@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     FiltersListFragment filtersListFragment;
     EditImageFragment editImageFragment;
 
-    CardView btn_filters_list, btn_edit;
+    CardView btn_filters_list, btn_edit, btn_brush;
 
     int brightnessFinal = 0;
     float contrastFinal = 1.0f;
@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
 
         btn_edit = (CardView) findViewById(R.id.btn_edit);
         btn_filters_list = (CardView) findViewById(R.id.btn_filters_list);
+        btn_brush = (CardView) findViewById(R.id.btn_brush);
 
         btn_filters_list.setOnClickListener(new View.OnClickListener() {
             @Override
