@@ -49,4 +49,8 @@ dependencies {
     implementation 'ja.burhanrashid52:photoeditor:1.1.1'
 
     implementation 'androidx.cardview:cardview:1.0.0'
+
+//Intall for Emoji Icon TextView
+//    implementation 'com.github.rockerhieu:emojicon:v1.4.2'
+    implementation 'io.github.rockerhieu:emojicon:1.4.0'
 }

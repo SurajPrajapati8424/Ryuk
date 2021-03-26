@@ -11,6 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.dr.psycho.ryuk.Adapter.ViewPagerAdapter;
 import com.dr.psycho.ryuk.Interface.BrushFragmnetListener;
 import com.dr.psycho.ryuk.Interface.EditImageFragmentListener;
+import com.dr.psycho.ryuk.Interface.EmojiFragmentListener;
 import com.dr.psycho.ryuk.Interface.FlitersListFragmentListener;
 import com.dr.psycho.ryuk.Utils.BitmapUtils;
 import com.google.android.material.snackbar.Snackbar;
@@ -44,7 +46,7 @@ import ja.burhanrashid52.photoeditor.OnSaveBitmap;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
 
-public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener, BrushFragmnetListener {
+public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener, BrushFragmnetListener, EmojiFragmentListener {
 
 
     public static String pictureName = "gateway_by-suraj.jpg";
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     FiltersListFragment filtersListFragment;
     EditImageFragment editImageFragment;
 
-    CardView btn_filters_list, btn_edit, btn_brush;
+    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji;
 
     int brightnessFinal = 0;
     float contrastFinal = 1.0f;
@@ -86,13 +88,15 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         photoEditorView = (PhotoEditorView) findViewById(R.id.image_preview);
         photoEditor = new PhotoEditor.Builder(this, photoEditorView)
                 .setPinchTextScalable(true)
+                .setDefaultEmojiTypeface(Typeface.createFromAsset(getAssets(),"emojione-android.ttf"))
                 .build();
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
 
-        btn_edit = (CardView) findViewById(R.id.btn_edit);
         btn_filters_list = (CardView) findViewById(R.id.btn_filters_list);
+        btn_edit = (CardView) findViewById(R.id.btn_edit);
         btn_brush = (CardView) findViewById(R.id.btn_brush);
+        btn_emoji = (CardView) findViewById(R.id.btn_emoji);
 
         btn_filters_list.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +125,15 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                 BrushFragment brushFragment = BrushFragment.getInstance();
                 brushFragment.setListener(MainActivity.this);
                 brushFragment.show(getSupportFragmentManager(),brushFragment.getTag());
+            }
+        });
+
+        btn_emoji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EmojiFragment emojiFragment = EmojiFragment.getInstance();
+                emojiFragment.setListener(MainActivity.this);
+                emojiFragment.show(getSupportFragmentManager(),emojiFragment.getTag());
             }
         });
 
@@ -372,5 +385,10 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
             photoEditor.brushEraser();
         else
             photoEditor.setBrushDrawingMode(true);
+    }
+
+    @Override
+    public void onEmojiSelected(String emoji) {
+        photoEditor.addEmoji(emoji);
     }
 }
