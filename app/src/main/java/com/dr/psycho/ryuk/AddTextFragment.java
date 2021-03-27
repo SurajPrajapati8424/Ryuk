@@ -1,6 +1,7 @@
 package com.dr.psycho.ryuk;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +13,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dr.psycho.ryuk.Adapter.ColorAdapter;
+import com.dr.psycho.ryuk.Adapter.FontAdapter;
 import com.dr.psycho.ryuk.Interface.AddTextFragmentListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 
-public class AddTextFragment extends BottomSheetDialogFragment implements ColorAdapter.ColorAdapterListener {
+public class AddTextFragment extends BottomSheetDialogFragment implements ColorAdapter.ColorAdapterListener, FontAdapter.FontAdapterClickListener {
 
     int colorSelected = Color.parseColor("#000000");    //Default color of text is Black
 
     AddTextFragmentListener listener;
 
     EditText edit_add_text;
-    RecyclerView recycler_color;
+    RecyclerView recycler_color,recycler_font ;
     Button btn_done;
+
+    Typeface typefaceSelected = Typeface.DEFAULT;
 
     public void setListener(AddTextFragmentListener listener) {
         this.listener = listener;
@@ -57,14 +61,21 @@ public class AddTextFragment extends BottomSheetDialogFragment implements ColorA
         recycler_color.setHasFixedSize(true);
         recycler_color.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
 
+        recycler_font = (RecyclerView) itemView.findViewById(R.id.recycler_font);
+        recycler_font.setHasFixedSize(true);
+        recycler_font.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
+
         ColorAdapter colorAdapter = new ColorAdapter(getContext(), this);
         recycler_color.setAdapter(colorAdapter);
+
+        FontAdapter fontAdapter = new FontAdapter(getContext(), this);
+        recycler_font.setAdapter(fontAdapter);
 
         //Event
         btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onAddTextButtonClick(edit_add_text.getText().toString(),colorSelected);
+                listener.onAddTextButtonClick(typefaceSelected, edit_add_text.getText().toString(), colorSelected);
             }
         });
 
@@ -75,5 +86,11 @@ public class AddTextFragment extends BottomSheetDialogFragment implements ColorA
     public void onColorSelected(int color) {
         colorSelected = color;  // set color when user select
 
+    }
+
+    @Override
+    public void onFontSelected(String fontName) {
+        typefaceSelected = Typeface.createFromAsset(getContext().getAssets(),new StringBuilder("fonts/")
+                .append(fontName).toString());
     }
 }
