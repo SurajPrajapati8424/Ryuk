@@ -1,20 +1,20 @@
 package com.dr.psycho.ryuk.Utils;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 
 import java.io.FileNotFoundException;
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+@SuppressWarnings("deprecation")
 public class BitmapUtils {
 
     public static Bitmap getBitmapFromAssets(Context context, String fileName, int width, int height){
@@ -49,23 +50,37 @@ public class BitmapUtils {
 
     public static  Bitmap getBitMapFromGallery(Context context, Uri uri, int width, int height){
 
-        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = context.getContentResolver().query(uri, filePathColumn, null, null,null);
-        cursor.moveToFirst();
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        String picturePath = cursor.getString(columnIndex);
-        cursor.close();
+//        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+//        Cursor cursor = context.getContentResolver().query(uri, filePathColumn, null, null,null);
+//        cursor.moveToFirst();
+//        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//        String picturePath = cursor.getString(columnIndex);
+//        cursor.close();
+        Bitmap bitmap = null;
+        ContentResolver contentResolver = context.getContentResolver();
+        try {
+            if(Build.VERSION.SDK_INT < 28) {
+                bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri);
+            } else {
+                ImageDecoder.Source source = ImageDecoder.createSource(contentResolver, uri);
+                bitmap = ImageDecoder.decodeBitmap(source);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(picturePath, options);
+//        BitmapFactory.decodeFile(picturePath, options);
 
         // Calculate inSampleSize
         options.inSampleSize  = calculateInSampleSize(options, width, height);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(picturePath, options);
+
+        //return BitmapFactory.decodeFile(picturePath, options);
+        return bitmap;
     }
 
     public static Bitmap applyOverlay(Context context, Bitmap sourceImage, int overlayDrawableResourceId){
@@ -150,53 +165,98 @@ public class BitmapUtils {
     public static String insertImage(ContentResolver cr,
                                      Bitmap source,
                                      String title, String description) throws IOException {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.Images.Media.TITLE,title);
-        contentValues.put(MediaStore.Images.Media.DISPLAY_NAME,title);
-        contentValues.put(MediaStore.Images.Media.DESCRIPTION,description);
-        contentValues.put(MediaStore.Images.Media.MIME_TYPE,"image/jpeg");
-        // Add the date meta data to ensure the image is added at the front of the gallery
-        contentValues.put(MediaStore.Images.Media.DATE_ADDED,System.currentTimeMillis());
-        contentValues.put(MediaStore.Images.Media.DATE_TAKEN,System.currentTimeMillis());
 
-        Uri uri = null;
-        String stringUrl = null;
-        try{
-            uri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-            if (source != null){
-                OutputStream outputStream = cr.openOutputStream(uri);
-                try{
-                    source.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
-                }finally {
-                    outputStream.close();
+        if(Build.VERSION.SDK_INT >= 29) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.Images.Media.TITLE, title);
+            contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, title);
+            contentValues.put(MediaStore.Images.Media.DESCRIPTION, description);
+            contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+            contentValues.put(MediaStore.Images.Media.IS_PENDING, true);
+            // Add the date meta data to ensure the image is added at the front of the gallery
+            contentValues.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
+            contentValues.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+
+            Uri uri = null;
+            String stringUrl = null;
+            try {
+                uri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                if (source != null) {
+//                OutputStream outputStream = cr.openOutputStream(uri);
+//                try{
+//                    source.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+//                }finally {
+//                    outputStream.close();
+//                }
+//                long id = ContentUris.parseId(uri);
+//                Bitmap miniThumb = MediaStore.Images.Thumbnails.getThumbnail(cr, id, MediaStore.Images.Thumbnails.MINI_KIND,null);
+//                storeThumbnail(cr,miniThumb,id,50f,50f,MediaStore.Images.Thumbnails.MICRO_KIND);
+                    saveImageToStream(source, cr.openOutputStream(uri));
+                    contentValues.put(MediaStore.Images.Media.IS_PENDING, false);
+                    cr.update(uri, contentValues, null, null);
+                } else {
+                    cr.delete(uri, null, null);
+                    uri = null;
                 }
-                long id = ContentUris.parseId(uri);
-                Bitmap miniThumb = MediaStore.Images.Thumbnails.getThumbnail(cr, id, MediaStore.Images.Thumbnails.MINI_KIND,null);
-                storeThumbnail(cr,miniThumb,id,50f,50f,MediaStore.Images.Thumbnails.MICRO_KIND);
+            } catch (FileNotFoundException e) {
+                if (uri != null) {
+                    cr.delete(uri, null, null);
+                    uri = null;
+                }
             }
-            else
-            {
-                cr.delete(uri, null, null);
-                uri = null;
+            if (uri != null)
+                stringUrl = uri.toString();
+            return stringUrl;
+        }else{
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.Images.Media.TITLE, title);
+            contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, title);
+            contentValues.put(MediaStore.Images.Media.DESCRIPTION, description);
+            contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+            // Add the date meta data to ensure the image is added at the front of the gallery
+            contentValues.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
+            contentValues.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+
+            Uri uri = null;
+            String stringUrl = null;
+            try {
+                uri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                if (source != null) {
+//                OutputStream outputStream = cr.openOutputStream(uri);
+//                try{
+//                    source.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+//                }finally {
+//                    outputStream.close();
+//                }
+//                long id = ContentUris.parseId(uri);
+//                Bitmap miniThumb = MediaStore.Images.Thumbnails.getThumbnail(cr, id, MediaStore.Images.Thumbnails.MINI_KIND,null);
+//                storeThumbnail(cr,miniThumb,id,50f,50f,MediaStore.Images.Thumbnails.MICRO_KIND);
+                    saveImageToStream(source, cr.openOutputStream(uri));
+                    cr.update(uri, contentValues, null, null);
+                } else {
+                    cr.delete(uri, null, null);
+                    uri = null;
+                }
+            } catch (FileNotFoundException e) {
+                if (uri != null) {
+                    cr.delete(uri, null, null);
+                    uri = null;
+                }
             }
-        } catch (FileNotFoundException e) {
-            if (uri != null){
-                cr.delete(uri,null,null);
-                uri  = null;
-            }
+            if (uri != null)
+                stringUrl = uri.toString();
+            return stringUrl;
         }
-        if (uri != null)
-            stringUrl = uri.toString();
-        return stringUrl;
     }
+
 
     private static final Bitmap storeThumbnail(ContentResolver cr, Bitmap source, long id, float width, float height, int kind) {
         Matrix matrix = new Matrix();
 
-        float scalX = width/source.getWidth();
+        float scaleX = width/source.getWidth();
         float scaleY = height/source.getHeight();
 
-        matrix.setScale(scalX,scaleY);
+        matrix.setScale(scaleX,scaleY);
 
         Bitmap thumb = Bitmap.createBitmap(source,0,0,source.getWidth(),source.getHeight(),matrix,true);
         ContentValues contentValues = new ContentValues(4);
@@ -219,6 +279,16 @@ public class BitmapUtils {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+    private static void saveImageToStream(Bitmap bitmap, OutputStream outputStream) {
+        if (outputStream != null) {
+            try {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -358,7 +358,8 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
                         permissionToken.continuePermissionRequest();
                     }
-                })
+                }).withErrorListener(
+                error -> Toast.makeText(getApplicationContext(),"Error Occured!", Toast.LENGTH_SHORT).show())
 
                 .check();
     }
@@ -379,9 +380,13 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                         if (multiplePermissionsReport.areAllPermissionsGranted())
                         {
-                            Intent intent = new Intent(Intent.ACTION_PICK);
+//                            Intent intent = new Intent(Intent.ACTION_PICK);
+//                            intent.setType("image/*");
+//                            startActivityForResult(intent, PERMISSION_PACK_IMAGE);
+                            Intent intent = new Intent();
                             intent.setType("image/*");
-                            startActivityForResult(intent, PERMISSION_PACK_IMAGE);
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PERMISSION_PACK_IMAGE);
                         }
                         else
                             Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
