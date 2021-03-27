@@ -3,6 +3,7 @@ package com.dr.psycho.ryuk;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.dr.psycho.ryuk.Adapter.ViewPagerAdapter;
+import com.dr.psycho.ryuk.Interface.AddFrameListener;
 import com.dr.psycho.ryuk.Interface.AddTextFragmentListener;
 import com.dr.psycho.ryuk.Interface.BrushFragmnetListener;
 import com.dr.psycho.ryuk.Interface.EditImageFragmentListener;
@@ -45,7 +47,7 @@ import ja.burhanrashid52.photoeditor.OnSaveBitmap;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
 
-public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener, BrushFragmnetListener, EmojiFragmentListener, AddTextFragmentListener {
+public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener, BrushFragmnetListener, EmojiFragmentListener, AddTextFragmentListener, AddFrameListener {
 
 
     public static String pictureName = "gateway_by-suraj.jpg";
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     FiltersListFragment filtersListFragment;
     EditImageFragment editImageFragment;
 
-    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji,btn_add_text,btn_add_img;
+    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji,btn_add_text,btn_add_img,btn_add_frame;
 
     int brightnessFinal = 0;
     float contrastFinal = 1.0f;
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         btn_emoji = (CardView) findViewById(R.id.btn_emoji);
         btn_add_text = (CardView) findViewById(R.id.btn_add_text);
         btn_add_img = (CardView) findViewById(R.id.btn_add_img);
+        btn_add_frame = (CardView) findViewById(R.id.btn_add_frame);
 
         btn_filters_list.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,6 +155,15 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
             @Override
             public void onClick(View v) {
                 addImageToPicture();
+            }
+        });
+
+        btn_add_frame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FrameFragment frameFragment = FrameFragment.getInstance();
+                frameFragment.setListener(MainActivity.this);
+                frameFragment.show(getSupportFragmentManager(),frameFragment.getTag());
             }
         });
 
@@ -443,5 +455,11 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     @Override
     public void onAddTextButtonClick(Typeface typeface, String text, int color) {
         photoEditor.addText(typeface, text, color);
+    }
+
+    @Override
+    public void onAddFrame(int frame) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), frame);
+        photoEditor.addImage(bitmap);
     }
 }
