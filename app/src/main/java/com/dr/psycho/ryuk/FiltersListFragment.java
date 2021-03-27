@@ -2,16 +2,14 @@ package com.dr.psycho.ryuk;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.dr.psycho.ryuk.Adapter.ThumbnailAdapter;
 import com.dr.psycho.ryuk.Interface.FlitersListFragmentListener;
@@ -36,10 +34,15 @@ public class FiltersListFragment extends BottomSheetDialogFragment implements  F
     FlitersListFragmentListener listener;
 
     static FiltersListFragment instance;
+    static Bitmap bitmap;
 
-    public static FiltersListFragment getInstance() {
+    public static FiltersListFragment getInstance(Bitmap bitmapSave) {
+        bitmap = bitmapSave;
+
         if (instance == null)
+        {
             instance = new FiltersListFragment();
+        }
         return instance;
     }
 
@@ -71,7 +74,7 @@ public class FiltersListFragment extends BottomSheetDialogFragment implements  F
         recyclerView.addItemDecoration(new SpacesItemDecoration(space));
         recyclerView.setAdapter(adapter);
 
-        displayThumbnail(null);
+        displayThumbnail(bitmap);
         return itemView;
     }
 

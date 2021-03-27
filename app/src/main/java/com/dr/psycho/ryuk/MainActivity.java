@@ -106,9 +106,14 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         btn_filters_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FiltersListFragment filtersListFragment = FiltersListFragment.getInstance();
-                filtersListFragment.setListener(MainActivity.this);
-                filtersListFragment.show(getSupportFragmentManager(),filtersListFragment.getTag());
+                if (filtersListFragment != null){
+                    filtersListFragment.show(getSupportFragmentManager(),filtersListFragment.getTag());
+                }
+                else {
+                    FiltersListFragment filtersListFragment = FiltersListFragment.getInstance(null);
+                    filtersListFragment.setListener(MainActivity.this);
+                    filtersListFragment.show(getSupportFragmentManager(),filtersListFragment.getTag());
+                }
             }
         });
 
@@ -412,8 +417,10 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                 photoEditorView.getSource().setImageBitmap(originalBitmap);
                 bitmap.recycle();
 
-                //Render Selected img thumbnail
-                filtersListFragment.displayThumbnail(originalBitmap);
+                // FixCrash FilterListFragment
+                filtersListFragment = FiltersListFragment.getInstance(originalBitmap);
+                filtersListFragment.setListener(this);
+
             } else {
                 if (requestCode == PERMISSION_INSERT_IMAGE) {
 
