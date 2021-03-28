@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -534,8 +535,14 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
 
     private void handleCropResult(Intent data) {
         final Uri resultUri = UCrop.getOutput(data);
-        if (resultUri != null)
+        if (resultUri != null){
             photoEditorView.getSource().setImageURI(resultUri);
+            //Fix error return original image after crop and use Filer
+            Bitmap bitmap = ((BitmapDrawable)photoEditorView.getSource().getDrawable()).getBitmap();
+            originalBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true);
+            filteredBitmap = originalBitmap;
+            finalBitmap = originalBitmap;
+        }
         else
             Toast.makeText(this, "Cannot Retrieve Crop image", Toast.LENGTH_SHORT).show();
     }
