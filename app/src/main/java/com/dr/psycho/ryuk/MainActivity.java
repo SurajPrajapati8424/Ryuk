@@ -1,12 +1,14 @@
 package com.dr.psycho.ryuk;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,6 +55,7 @@ import ja.burhanrashid52.photoeditor.PhotoEditorView;
 public class MainActivity extends AppCompatActivity implements FlitersListFragmentListener, EditImageFragmentListener, BrushFragmnetListener, EmojiFragmentListener, AddTextFragmentListener, AddFrameListener {
 
 
+    private static final int CAMERA_REQUEST = 1002;
     public static String pictureName = "gateway_by-suraj.jpg";
     public  static final int PERMISSION_PACK_IMAGE = 1000;
     public static  final int PERMISSION_INSERT_IMAGE = 1001;
@@ -313,7 +316,11 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_open){
+        if (id == R.id.action_camera){
+            openCamera();
+            return true;
+        }
+        else if (id == R.id.action_open){
             openImageFromGallery();
             return true;
         }
@@ -324,9 +331,41 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveImageToGallery() {
+    private void openCamera() {
         Dexter.withContext(this)
                 .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+                        if (multiplePermissionsReport.areAllPermissionsGranted())
+                        {
+                            ContentValues values = new ContentValues();
+                            values.put(MediaStore.Images.Media.TITLE,"New Picture");
+                            values.put(MediaStore.Images.Media.DESCRIPTION,"From Ryuk Cam");
+                            image_selected_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+                            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_selected_uri);
+                            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+                        permissionToken.continuePermissionRequest();
+                    }
+                }).withErrorListener(
+                error -> Toast.makeText(getApplicationContext(),"Error Occured!", Toast.LENGTH_SHORT).show())
+
+                .check();
+    }
+
+    private void saveImageToGallery() {
+        Dexter.withContext(this)
+                .withPermissions(Manifest.permission.CAMERA,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .withListener(new MultiplePermissionsListener() {
                     @Override
@@ -452,7 +491,27 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                 filtersListFragment = FiltersListFragment.getInstance(originalBitmap);
                 filtersListFragment.setListener(this);
 
-            } else if (requestCode == PERMISSION_INSERT_IMAGE) {
+            }else if (requestCode == CAMERA_REQUEST) {
+
+                Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, image_selected_uri, 800, 800);
+
+                // Clear Bitmap memory
+                originalBitmap.recycle();
+                finalBitmap.recycle();
+                filteredBitmap.recycle();
+
+                originalBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                finalBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                filteredBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                photoEditorView.getSource().setImageBitmap(originalBitmap);
+                bitmap.recycle();
+
+                // FixCrash FilterListFragment
+                filtersListFragment = FiltersListFragment.getInstance(originalBitmap);
+                filtersListFragment.setListener(this);
+
+            }
+            else if (requestCode == PERMISSION_INSERT_IMAGE) {
                     Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 250 , 250);
                     photoEditor.addImage(bitmap);
                 }

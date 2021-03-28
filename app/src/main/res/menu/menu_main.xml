@@ -3,17 +3,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
-    >
+    tools:context=".MainActivity">
 
     <item
+        android:id="@+id/action_camera"
+        android:icon="@drawable/ic_camera"
+        android:title="CAMERA"
+        app:showAsAction="always"
+        android:enabled="true"
+        android:orderInCategory="99"/>
+    <item
         android:id="@+id/action_open"
+        android:icon="@drawable/ic_open"
         android:title="OPEN"
         app:showAsAction="always"
         android:enabled="true"
         android:orderInCategory="100"/>
     <item
         android:id="@+id/action_save"
+        android:icon="@drawable/ic_save"
         android:title="SAVE"
         app:showAsAction="always"
         android:enabled="true"
