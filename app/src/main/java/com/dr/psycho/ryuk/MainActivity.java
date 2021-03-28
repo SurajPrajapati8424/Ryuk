@@ -35,13 +35,16 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.yalantis.ucrop.UCrop;
 import com.zomato.photofilters.imageprocessors.Filter;
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter;
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter;
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import ja.burhanrashid52.photoeditor.OnSaveBitmap;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
@@ -64,11 +67,13 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
     FiltersListFragment filtersListFragment;
     EditImageFragment editImageFragment;
 
-    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji,btn_add_text,btn_add_img,btn_add_frame;
+    CardView btn_filters_list, btn_edit, btn_brush,btn_emoji,btn_add_text,btn_add_img,btn_add_frame,btn_crop;
 
     int brightnessFinal = 0;
     float contrastFinal = 1.0f;
     float saturationFinal = 1.0f;
+
+    Uri image_selected_uri;
 
     //Load native image filter lib
     static {
@@ -102,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         btn_add_text = (CardView) findViewById(R.id.btn_add_text);
         btn_add_img = (CardView) findViewById(R.id.btn_add_img);
         btn_add_frame = (CardView) findViewById(R.id.btn_add_frame);
+        btn_crop = (CardView) findViewById(R.id.btn_crop);
 
         btn_filters_list.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,10 +178,27 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
             }
         });
 
+        btn_crop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                startCrop(image_selected_uri);
+            }
+        });
+
         loadImage();
 
 
     }
+
+    private void startCrop(Uri uri) {
+        String destinationFileName = new StringBuilder(UUID.randomUUID().toString()).append("jpeg").toString();
+
+        UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(),destinationFileName)));
+
+        uCrop.start(MainActivity.this);
+    }
+
 
     private void addImageToPicture() {
         Dexter.withContext(this)
@@ -411,6 +434,9 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
 
                 Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 800, 800);
 
+                image_selected_uri = data.getData();
+
+
                 // Clear Bitmap memory
                 originalBitmap.recycle();
                 finalBitmap.recycle();
@@ -426,14 +452,33 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                 filtersListFragment = FiltersListFragment.getInstance(originalBitmap);
                 filtersListFragment.setListener(this);
 
-            } else {
-                if (requestCode == PERMISSION_INSERT_IMAGE) {
-
+            } else if (requestCode == PERMISSION_INSERT_IMAGE) {
                     Bitmap bitmap = BitmapUtils.getBitMapFromGallery(this, data.getData(), 250 , 250);
                     photoEditor.addImage(bitmap);
                 }
-            }
+            else if (requestCode == UCrop.REQUEST_CROP)
+                handleCropResult(data);
         }
+        else if (resultCode == UCrop.RESULT_ERROR)
+            handleCropError(data);
+    }
+
+    private void handleCropError(Intent data) {
+        final  Throwable cropError = UCrop.getError(data);
+        if (cropError != null){
+            Toast.makeText(this, ""+cropError.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "Unexpected Error", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void handleCropResult(Intent data) {
+        final Uri resultUri = UCrop.getOutput(data);
+        if (resultUri != null)
+            photoEditorView.getSource().setImageURI(resultUri);
+        else
+            Toast.makeText(this, "Cannot Retrieve Crop image", Toast.LENGTH_SHORT).show();
     }
 
     @Override

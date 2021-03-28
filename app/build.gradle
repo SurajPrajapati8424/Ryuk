@@ -53,4 +53,7 @@ dependencies {
 //Intall for Emoji Icon TextView
 //    implementation 'com.github.rockerhieu:emojicon:v1.4.2'
     implementation 'io.github.rockerhieu:emojicon:1.4.0'
+
+//    uCrop
+    implementation 'com.github.yalantis:ucrop:2.2.6-native'
 }
