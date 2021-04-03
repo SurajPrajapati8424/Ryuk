@@ -22,9 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.viewpager.widget.ViewPager;
 
-import com.dr.psycho.ryuk.Adapter.ViewPagerAdapter;
 import com.dr.psycho.ryuk.Interface.AddFrameListener;
 import com.dr.psycho.ryuk.Interface.AddTextFragmentListener;
 import com.dr.psycho.ryuk.Interface.BrushFragmnetListener;
@@ -233,20 +231,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
         photoEditorView.getSource().setImageBitmap(originalBitmap);
     }
 
-    private void setViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        filtersListFragment = new FiltersListFragment();
-        filtersListFragment.setListener(this);
-
-        editImageFragment = new EditImageFragment();
-        editImageFragment.setListener(this);
-
-        adapter.addFragment(filtersListFragment, "FILTERS");
-        adapter.addFragment(editImageFragment, "EDIT");
-
-        viewPager.setAdapter(adapter);
-    }
 
     @Override
     public void onBrightnessChanges(int brightness) {
@@ -443,13 +428,13 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                         if (multiplePermissionsReport.areAllPermissionsGranted())
                         {
-//                            Intent intent = new Intent(Intent.ACTION_PICK);
-//                            intent.setType("image/*");
-//                            startActivityForResult(intent, PERMISSION_PACK_IMAGE);
-                            Intent intent = new Intent();
+                            Intent intent = new Intent(Intent.ACTION_PICK);
                             intent.setType("image/*");
-                            intent.setAction(Intent.ACTION_GET_CONTENT);
-                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PERMISSION_PACK_IMAGE);
+                            startActivityForResult(intent, PERMISSION_PACK_IMAGE);
+//                            Intent intent = new Intent();
+//                            intent.setType("image/*");
+//                            intent.setAction(Intent.ACTION_GET_CONTENT);
+//                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PERMISSION_PACK_IMAGE);
                         }
                         else
                             Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
