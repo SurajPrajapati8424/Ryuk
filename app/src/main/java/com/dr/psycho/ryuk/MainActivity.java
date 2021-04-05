@@ -319,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
 
     private void openCamera() {
         Dexter.withContext(this)
-                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
+                .withPermissions(Manifest.permission.CAMERA,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .withListener(new MultiplePermissionsListener() {
                     @Override
@@ -344,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                         permissionToken.continuePermissionRequest();
                     }
                 }).withErrorListener(
-                error -> Toast.makeText(getApplicationContext(),"Error Occured!", Toast.LENGTH_SHORT).show())
+                error -> Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_SHORT).show())
 
                 .check();
     }
@@ -407,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                         permissionToken.continuePermissionRequest();
                     }
                 }).withErrorListener(
-                error -> Toast.makeText(getApplicationContext(),"Error Occured!", Toast.LENGTH_SHORT).show())
+                error -> Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_SHORT).show())
 
                 .check();
     }
@@ -446,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                     }
                 })
                 .withErrorListener(
-                        error -> Toast.makeText(getApplicationContext(),"Error Occured!", Toast.LENGTH_SHORT).show())
+                        error -> Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_SHORT).show())
 
                 .check();
     }
