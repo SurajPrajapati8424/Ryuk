@@ -54,9 +54,9 @@ public class introActivity extends AppCompatActivity {
         btnAnim = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.button_animation);
 
         ArrayList<ScreenItem> mList = new ArrayList<>();
-        mList.add(new ScreenItem("Click To Go","Start Editing From Fresh Clicked Image. Start Editing From Fresh Clicked Image \n Start Editing From Fresh Clicked Image",R.drawable.scooty));
-        mList.add(new ScreenItem("Quick Edit","Get a Image apply Filter's on it. \n Get a Image apply Filter's on it. Get a Image apply Filter's on it.",R.drawable.office));
-        mList.add(new ScreenItem("Funny Tool","Add funny images on your Friends face. Add funny images on your Friends face. Add funny images on your Friends face",R.drawable.food));
+        mList.add(new ScreenItem("Click To Go","Start Editing From Fresh Clicked Image. Start Editing From Fresh Clicked Image \n Start Editing From Fresh Clicked Image",R.drawable.click_to_go));
+        mList.add(new ScreenItem("Quick Edit","Get a Image apply Filter's on it. \n Get a Image apply Filter's on it. Get a Image apply Filter's on it.",R.drawable.funny_tool));
+        mList.add(new ScreenItem("Funny Tool","Add funny images on your Friends face. Add funny images on your Friends face. Add funny images on your Friends face",R.drawable.quick_edit));
 
         // setup viewpager
         screenPager = findViewById(R.id.screenViewPager);
@@ -76,7 +76,6 @@ public class introActivity extends AppCompatActivity {
                 if ( position < mList.size()){
                     position ++;
                     screenPager.setCurrentItem(position);
-
 
                 }
                 if (position == mList.size()-1){  // when we reach to the last screen

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class IntroViewPagerAdapter extends PagerAdapter {
 
     Context mContext;
     List<ScreenItem> mListScreen;
+    ConstraintLayout constraintLayout;
 
     public IntroViewPagerAdapter(Context mContext, List<ScreenItem> mListScreen) {
         this.mContext = mContext;
@@ -32,10 +34,27 @@ public class IntroViewPagerAdapter extends PagerAdapter {
         ImageView imgSlide = layoutScreen.findViewById(R.id.intro_img);
         TextView title = layoutScreen.findViewById(R.id.intro_title);
         TextView description = layoutScreen.findViewById(R.id.intro_description);
+        constraintLayout = layoutScreen.findViewById(R.id.introScreenLayout);
 
         title.setText(mListScreen.get(position).getTitle());
         description.setText(mListScreen.get(position).getDescription());
         imgSlide.setImageResource(mListScreen.get(position).getScreenImg());
+
+        if (position == 0) {
+            layoutScreen.setBackgroundColor(mContext.getColor(R.color.click_to_go));
+            title.setTextColor(mContext.getColor(R.color.white_50));
+            description.setTextColor(mContext.getColor(R.color.white_50));
+        }
+        if (position == 1){
+            layoutScreen.setBackgroundColor(mContext.getColor(R.color.funny_tool));
+            title.setTextColor(mContext.getColor(R.color.white_50));
+            description.setTextColor(mContext.getColor(R.color.white_50));
+        }
+        if (position == 2){
+            layoutScreen.setBackgroundColor(mContext.getColor(R.color.white));
+            title.setTextColor(mContext.getColor(R.color.black_200));
+            description.setTextColor(mContext.getColor(R.color.black_200));
+        }
 
         container.addView(layoutScreen);
 

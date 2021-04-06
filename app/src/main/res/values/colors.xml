@@ -43,5 +43,8 @@
     <color name="orange_dark_200">#c67c00</color>
     <color name="orange_100">#f09c00</color>
 
+    <color name="click_to_go">#414881</color>
+    <color name="funny_tool">#003376</color>
+
 
 </resources>

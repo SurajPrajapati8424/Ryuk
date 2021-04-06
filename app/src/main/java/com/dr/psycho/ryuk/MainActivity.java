@@ -351,13 +351,14 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
 
     private void saveImageToGallery() {
         Dexter.withContext(this)
-                .withPermissions(Manifest.permission.CAMERA,
+                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .withListener(new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                         if (multiplePermissionsReport.areAllPermissionsGranted())
                         {
+                            photoEditorView.setBackgroundColor(getApplicationContext().getColor(R.color.transparent));
                             photoEditor.saveAsBitmap(new OnSaveBitmap() {
                                 @Override
                                 public void onBitmapReady(Bitmap saveBitmap) {
@@ -367,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements FlitersListFragme
                                                 saveBitmap,
                                                 System.currentTimeMillis()+"_profile.jpg",
                                                 null);
+                                        photoEditorView.setBackgroundResource(R.drawable.gradient_imageview);
 
                                         if (!TextUtils.isEmpty(path)){
                                             Snackbar snackbar = Snackbar.make(coordinatorLayout,"Image saved to gallery!",

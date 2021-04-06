@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/introScreenLayout"
     tools:context=".introActivity"
-    android:background="@drawable/btn_gradient_style"
     >
 
     <androidx.viewpager.widget.ViewPager
@@ -35,7 +35,6 @@
         android:visibility="invisible"
         android:id="@+id/btn_getStart"
         android:textColor="@color/white_50"
-        android:background="@drawable/btn_gradient_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
@@ -46,8 +45,8 @@
 
     <com.google.android.material.tabs.TabLayout
         app:tabBackground="@drawable/indicator_selector"
-        android:background="@color/transparent"
         android:id="@+id/tab_indicator"
+        android:background="@color/transparent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
