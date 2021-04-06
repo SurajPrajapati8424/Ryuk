@@ -1,7 +1,11 @@
 package com.dr.psycho.ryuk;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -28,12 +32,19 @@ public class introActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // make the activity on full screen
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        // when this activity about to launch we need to check if opened before or not
+        if (restorePrefData()){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
         setContentView(R.layout.activity_intro);
         // hide the action bar
-//        getSupportActionBar().hide();
+        getSupportActionBar().hide();
 
 
         // ini views
@@ -102,6 +113,33 @@ public class introActivity extends AppCompatActivity {
             }
         });
 
+        // get started button click listener
+
+        btnGetStarted.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(intent);
+
+                savePrefsData();
+
+                finish();
+            }
+        });
+
+    }
+
+    private boolean restorePrefData() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("myPrefs",MODE_PRIVATE);
+        Boolean isIntroActivityOpenedBefore = pref.getBoolean("isIntroOpened", false);
+        return isIntroActivityOpenedBefore;
+    }
+
+    private void savePrefsData() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("myPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("isIntroOpened",true);
+        editor.commit();
     }
 
     private void loadLastScreen() {

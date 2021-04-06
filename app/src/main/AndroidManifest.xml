@@ -19,8 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ryuk">
-        <activity android:name=".introActivity"
-            android:theme="@style/Theme.Ryuk.NoActionBar.FullScreen">
+        <activity android:name=".introActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +27,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:theme="@style/Theme.Ryuk.NoActionBar.FullScreen">
         </activity>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
